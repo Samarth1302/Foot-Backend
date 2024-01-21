@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { sendEmail } = require("../utils/nodemailer");
+const { scheduleCleanupJob } = require("../utils/cleanupUtil");
 const crypto = require("crypto");
 
 async function signup(req, res) {
@@ -10,9 +11,26 @@ async function signup(req, res) {
   try {
     const oldUserByEmail = await User.findOne({ email });
     if (oldUserByEmail) {
-      return res
-        .status(400)
-        .json({ error: "User with the same email already exists" });
+      if (oldUserByEmail.isVerified) {
+        return res
+          .status(400)
+          .json({ error: "User with the same email already exists" });
+      } else {
+        const verificationLink = `${process.env.FRONTEND_URL}/signup?token=${oldUserByEmail.token}&email=${oldUserByEmail.email}`;
+
+        const emailSubject = "Verify your FootZone account";
+        const emailHTML = `
+          <p>Hello ${username},</p>
+          <p>Thank you for signing up with FootZone. Please click the link below to verify your account:</p>
+          <a href="${verificationLink}">${verificationLink}</a>
+        `;
+        sendEmail(oldUserByEmail.email, emailSubject, emailHTML);
+
+        return res.status(201).json({
+          success: true,
+          message: "Verification email sent. Please check your inbox.",
+        });
+      }
     }
 
     const oldUserByUsername = await User.findOne({ username });
@@ -28,7 +46,7 @@ async function signup(req, res) {
       email: email.toLowerCase(),
       password: encryptedPassword,
     });
-    const verificationToken = generateRandomCode(6);
+    const verificationToken = crypto.randomBytes(3).toString("hex");
 
     user.token = verificationToken;
 
@@ -44,6 +62,7 @@ async function signup(req, res) {
 
     await user.save();
     res.status(201).json({
+      success: true,
       message: "Verification email sent. Please check your inbox.",
     });
   } catch (err) {
@@ -137,22 +156,11 @@ async function login(req, res) {
   }
 }
 
+//CRON-JOBS
+scheduleCleanupJob();
+
 module.exports = {
   signup,
   login,
   verify,
 };
-
-function generateRandomCode(length) {
-  const chars =
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~`!@#$%^&*()-_+={}[]|:;>.<,?/";
-  const randomBytes = crypto.randomBytes(length);
-  let code = "";
-
-  for (let i = 0; i < length; i++) {
-    const byte = randomBytes[i] % chars.length;
-    code += chars.charAt(byte);
-  }
-
-  return code;
-}
