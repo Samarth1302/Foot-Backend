@@ -8,6 +8,33 @@ const crypto = require("crypto");
 async function signup(req, res) {
   const { username, email, password } = req.body;
 
+  const lowercaseRegex = /[a-z]/;
+  const uppercaseRegex = /[A-Z]/;
+  const numberRegex = /\d/;
+  const specialCharRegex = /[@$!%*?&]/;
+
+  if (password.length < 8) {
+    return res.status(400).json({
+      error: "Password must be atleast 8 characters long.",
+    });
+  } else if (!lowercaseRegex.test(password)) {
+    return res.status(400).json({
+      error: "Password must contain atleast one lowercase letter.",
+    });
+  } else if (!uppercaseRegex.test(password)) {
+    return res.status(400).json({
+      error: "Password must contain atleast one uppercase letter.",
+    });
+  } else if (!numberRegex.test(password)) {
+    return res.status(400).json({
+      error: "Password must contain atleast one number.",
+    });
+  } else if (!specialCharRegex.test(password)) {
+    return res.status(400).json({
+      error: "Password must contain atleast one special character (@$!%*?&).",
+    });
+  }
+
   try {
     const oldUserByEmail = await User.findOne({ email });
     if (oldUserByEmail) {
