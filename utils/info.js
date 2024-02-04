@@ -75,21 +75,27 @@ async function storePlayersDataInMongoDB(league, season) {
   }
 }
 
-const leagueIds = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+async function getInfo(leagueIds, seasonYear) {
+  mongoose.connect(process.env.MONGODB_URI);
+  const db = mongoose.connection;
 
-const seasonYear = 2023;
+  db.on("error", (err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
+  });
 
-mongoose.connect(process.env.MONGODB_URI);
-const db = mongoose.connection;
+  db.once("open", async () => {
+    try {
+      for (const leagueId of leagueIds) {
+        await storeTeamsDataInMongoDB(leagueId, seasonYear);
+        await storePlayersDataInMongoDB(leagueId, seasonYear);
+      }
+    } finally {
+      mongoose.connection.close();
+    }
+  });
+}
 
-db.on("error", (err) => {
-  process.exit(1);
-});
-
-db.once("open", async () => {
-  for (const leagueId of leagueIds) {
-    await storeTeamsDataInMongoDB(leagueId, seasonYear);
-    await storePlayersDataInMongoDB(leagueId, seasonYear);
-  }
-  mongoose.connection.close();
-});
+module.exports = {
+  getInfo,
+};

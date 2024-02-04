@@ -5,13 +5,14 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const authRoutes = require("./routes/authRoutes");
 const passRoutes = require("./routes/passRoutes");
+const infoRoutes = require("./routes/infoRoutes");
 
 const app = express();
 const port = 4000;
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   })
@@ -27,6 +28,7 @@ db.once("open", () => {
 
 app.use("/auth", authRoutes);
 app.use("/security", passRoutes);
+app.use("/info", infoRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
