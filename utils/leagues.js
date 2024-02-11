@@ -5,17 +5,17 @@ require("dotenv").config();
 
 const apiKey = process.env.API_KEY;
 
-const headers = new Headers();
-headers.append("x-rapidapi-key", apiKey);
-headers.append("x-rapidapi-host", "v3.football.api-sports.io");
+const apiUrl = "https://v3.football.api-sports.io/leagues";
+const headers = {
+  "x-rapidapi-host": "v3.football.api-sports.io",
+  "x-rapidapi-key": apiKey,
+};
 
 const requestOptions = {
   method: "GET",
   headers: headers,
   redirect: "follow",
 };
-
-const apiUrl = "https://v3.football.api-sports.io/leagues?current=true";
 
 mongoose.connect(process.env.MONGODB_URI);
 const db = mongoose.connection;
@@ -29,35 +29,31 @@ const fetchDataCleanAndStoreInMongo = async () => {
     const response = await fetch(apiUrl, requestOptions);
     const newData = await response.json();
 
-    const tempData = new League({
-      data: newData,
-    });
-    await tempData.save();
-
     const leagueIds = [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 39, 40, 61, 78, 94, 128, 135, 140, 142, 143,
-      253, 307, 323,
+      39, 40, 44, 61, 71, 78, 88, 94, 128, 135, 140, 142, 253, 254, 262, 307,
+      323,
     ];
+    const season = 2023;
 
-    await League.updateMany(
-      { _id: tempData._id },
-      { $pull: { "data.response": { "league.id": { $nin: leagueIds } } } }
+    const filteredLeagues = newData.response.filter(
+      (league) =>
+        leagueIds.includes(league.league.id) &&
+        league.seasons.some((season) => season.year === season)
     );
-    const cleanedData = await League.findById(tempData._id);
 
     const existingLeague = await League.findOne();
 
     if (existingLeague) {
-      existingLeague.data = cleanedData.data;
+      existingLeague.data = filteredLeagues;
       await existingLeague.save();
+      console.log("Existing league data updated in MongoDB successfully!");
     } else {
       const league = new League({
-        data: cleanedData.data,
+        data: filteredLeagues,
       });
       await league.save();
+      console.log("New league data stored in MongoDB successfully!");
     }
-
-    console.log("League data cleaned and stored in MongoDB successfully!");
   } catch (error) {
     console.error(
       "Error fetching, cleaning, or storing data in MongoDB:",
@@ -67,6 +63,8 @@ const fetchDataCleanAndStoreInMongo = async () => {
     mongoose.connection.close();
   }
 };
+
+fetchDataCleanAndStoreInMongo();
 module.exports = {
   fetchDataCleanAndStoreInMongo,
 };

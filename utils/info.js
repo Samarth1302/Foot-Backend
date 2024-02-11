@@ -47,13 +47,11 @@ async function storeTeamsDataInMongoDB(league, season) {
   try {
     const teamsData = await getTeams(league, season);
 
-    const teamModel = new Team({
-      data: teamsData,
-      leagueId: league,
-    });
-    await teamModel.save();
-
-    console.log("Teams data stored in MongoDB successfully!");
+    await Team.findOneAndUpdate(
+      { leagueId: league },
+      { data: teamsData, leagueId: league },
+      { upsert: true }
+    );
   } catch (error) {
     console.error("Error fetching or storing teams data:", error);
   }
@@ -63,13 +61,11 @@ async function storePlayersDataInMongoDB(league, season) {
   try {
     const playersData = await getAllPlayers(league, season);
 
-    const playerModel = new Player({
-      data: playersData,
-      leagueId: league,
-    });
-    await playerModel.save();
-
-    console.log("Players data stored in MongoDB successfully!");
+    await Player.findOneAndUpdate(
+      { leagueId: league },
+      { data: playersData, leagueId: league },
+      { upsert: true }
+    );
   } catch (error) {
     console.error("Error fetching or storing players data:", error);
   }
@@ -91,11 +87,11 @@ async function getInfo(leagueIds, seasonYear) {
         await storePlayersDataInMongoDB(leagueId, seasonYear);
       }
     } finally {
+      console.log("Players,teams data stored in MongoDB successfully!");
       mongoose.connection.close();
     }
   });
 }
-
 module.exports = {
   getInfo,
 };

@@ -1,14 +1,9 @@
 const fetch = require("node-fetch");
-const mongoose = require("mongoose");
 const Table = require("../models/Table");
+const mongoose = require("mongoose");
 require("dotenv").config();
 
 const apiKey = process.env.API_KEY;
-
-const headers = {
-  "x-rapidapi-key": apiKey,
-  "x-rapidapi-host": "v3.football.api-sports.io",
-};
 
 const apiUrl = "https://v3.football.api-sports.io/";
 
@@ -16,7 +11,13 @@ async function callApi(endpoint, params = {}) {
   const queryString = new URLSearchParams(params).toString();
   const url = apiUrl + endpoint + (queryString ? `?${queryString}` : "");
 
-  const response = await fetch(url, { method: "GET", headers });
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "x-rapidapi-key": apiKey,
+      "x-rapidapi-host": "v3.football.api-sports.io",
+    },
+  });
   const data = await response.json();
 
   return data;
@@ -52,8 +53,6 @@ async function storeStandingsDataInMongoDB(leagueId, season) {
         });
         await standingsModel.save();
       }
-
-      console.log("Standings data stored in MongoDB successfully!");
     } else {
       console.error("No standings data found for league with ID:", leagueId);
     }
@@ -62,26 +61,28 @@ async function storeStandingsDataInMongoDB(leagueId, season) {
   }
 }
 
-async function connectAndPerformDbOperations(leagueIds, seasonYear) {
-  mongoose.connect(process.env.MONGODB_URI);
-  const db = mongoose.connection;
+async function performOps(leagueIds, seasonYear) {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
 
-  db.on("error", (err) => {
-    console.error("MongoDB connection error:", err);
-    process.exit(1);
-  });
-
-  db.once("open", async () => {
-    try {
-      for (const leagueId of leagueIds) {
-        await storeStandingsDataInMongoDB(leagueId, seasonYear);
-      }
-    } finally {
-      mongoose.connection.close();
+    for (const leagueId of leagueIds) {
+      await storeStandingsDataInMongoDB(leagueId, seasonYear);
     }
-  });
+  } catch (error) {
+    console.error("Error in standings function:", error);
+  } finally {
+    console.log("Standings data stored in MongoDB successfully!");
+    mongoose.connection.close();
+    console.log("Database connection closed.");
+  }
 }
 
-module.exports = {
-  connectAndPerformDbOperations,
-};
+const firstBatch = [39, 40, 44, 61, 71, 78, 88, 94, 128];
+const secondBatch = [135, 140, 142, 253, 254, 262, 307, 323];
+const seasonYear = 2023;
+
+performOps(firstBatch, seasonYear);
+
+setTimeout(() => {
+  performOps(secondBatch, seasonYear);
+}, 1 * 60 * 1000);
