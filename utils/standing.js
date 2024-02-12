@@ -77,12 +77,6 @@ async function performOps(leagueIds, seasonYear) {
   }
 }
 
-const firstBatch = [39, 40, 44, 61, 71, 78, 88, 94, 128];
-const secondBatch = [135, 140, 142, 253, 254, 262, 307, 323];
-const seasonYear = 2023;
-
-performOps(firstBatch, seasonYear);
-
-setTimeout(() => {
-  performOps(secondBatch, seasonYear);
-}, 1 * 60 * 1000);
+module.exports = {
+  performOps,
+};
