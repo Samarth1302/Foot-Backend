@@ -241,7 +241,9 @@ router.get("/leagues/:leagueId/teams/:teamId/players", async (req, res) => {
     }
 
     const transformedPlayers = teamPlayers.map((player) => ({
-      name: `${player.player.firstname} ${player.player.lastname}`,
+      name: player.player.name,
+      firstname: player.player.firstname,
+      lastname: player.player.lastname,
       age: player.player.age,
       nationality: player.player.nationality,
       height: player.player.height,
