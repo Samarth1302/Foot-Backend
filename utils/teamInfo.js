@@ -1,7 +1,6 @@
 const fetch = require("node-fetch");
 const mongoose = require("mongoose");
 const Team = require("../models/Team");
-const Player = require("../models/Player");
 require("dotenv").config();
 
 const apiKey = process.env.API_KEY;
@@ -28,21 +27,6 @@ async function getTeams(league, season) {
   return teams;
 }
 
-async function getAllPlayers(league, season, page = 1, playersData = []) {
-  const players = await callApi("players", { league, season, page });
-  playersData = playersData.concat(players.response);
-
-  if (players.paging.current < players.paging.total) {
-    page = players.paging.current + 1;
-    if (page % 2 === 1) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-    playersData = await getAllPlayers(league, season, page, playersData);
-  }
-
-  return playersData;
-}
-
 async function storeTeamsDataInMongoDB(league, season) {
   try {
     const teamsData = await getTeams(league, season);
@@ -63,27 +47,7 @@ async function storeTeamsDataInMongoDB(league, season) {
   }
 }
 
-async function storePlayersDataInMongoDB(league, season) {
-  try {
-    const playersData = await getAllPlayers(league, season);
-
-    if (playersData.length > 0) {
-      await Player.findOneAndUpdate(
-        { leagueId: league },
-        { data: playersData },
-        { upsert: true }
-      );
-    } else {
-      console.log(
-        `Players data for league ${league} is empty, skipping database update.`
-      );
-    }
-  } catch (error) {
-    console.error("Error fetching or storing players data:", error);
-  }
-}
-
-async function getInfo(leagueIds, seasonYear) {
+async function teamInfo(leagueIds, seasonYear) {
   mongoose.connect(process.env.MONGODB_URI);
   const db = mongoose.connection;
 
@@ -96,7 +60,6 @@ async function getInfo(leagueIds, seasonYear) {
     try {
       for (const leagueId of leagueIds) {
         await storeTeamsDataInMongoDB(leagueId, seasonYear);
-        await storePlayersDataInMongoDB(leagueId, seasonYear);
       }
     } finally {
       console.log("Players,teams data stored in MongoDB successfully!");
@@ -105,11 +68,10 @@ async function getInfo(leagueIds, seasonYear) {
   });
 }
 // const seasonYear = 2023;
-// const firstBatch = [
-//   39, 40, 44, 61, 71, 78, 88, 94, 128, 135, 140, 142, 253, 254, 262, 307, 323,
-// ];
-// getInfo(firstBatch, seasonYear);
+// const firstBatch = [];
+// teamInfo(firstBatch, seasonYear);
 
 module.exports = {
-  getInfo,
+  teamInfo,
 };
+// 39, 40, 44, 61, 71, 78, 88, 94, 128, 135, 140, 142, 253, 254, 262, 307, 323,
