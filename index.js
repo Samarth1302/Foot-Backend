@@ -7,7 +7,9 @@ const authRoutes = require("./routes/authRoutes");
 const cron = require("node-cron");
 const passRoutes = require("./routes/passRoutes");
 const infoRoutes = require("./routes/infoRoutes");
-const { performOps } = require("./utils/standing.js")
+const newsRoutes = require("./routes/newsRoutes.js");
+const { performOps } = require("./utils/standing.js");
+const { fetchAndStoreFootballNews } = require("./utils/fetchNews.js");
 const app = express();
 const port = 4000;
 
@@ -30,7 +32,7 @@ db.once("open", () => {
 app.use("/auth", authRoutes);
 app.use("/security", passRoutes);
 app.use("/info", infoRoutes);
-
+app.use("/news", newsRoutes);
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
@@ -45,4 +47,8 @@ cron.schedule("0 0 * * *", async () => {
   setTimeout(async () => {
     await performOps(secondBatch, seasonYear);
   }, 1 * 60 * 1000);
+});
+
+cron.schedule("10 */4 * * *", async () => {
+  await fetchAndStoreFootballNews();
 });

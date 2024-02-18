@@ -47,11 +47,17 @@ async function storeTeamsDataInMongoDB(league, season) {
   try {
     const teamsData = await getTeams(league, season);
 
-    await Team.findOneAndUpdate(
-      { leagueId: league },
-      { data: teamsData, leagueId: league },
-      { upsert: true }
-    );
+    if (teamsData.response.length > 0) {
+      await Team.findOneAndUpdate(
+        { leagueId: league },
+        { data: teamsData },
+        { upsert: true }
+      );
+    } else {
+      console.log(
+        `Teams data for league ${league} is empty, skipping database update.`
+      );
+    }
   } catch (error) {
     console.error("Error fetching or storing teams data:", error);
   }
@@ -61,11 +67,17 @@ async function storePlayersDataInMongoDB(league, season) {
   try {
     const playersData = await getAllPlayers(league, season);
 
-    await Player.findOneAndUpdate(
-      { leagueId: league },
-      { data: playersData, leagueId: league },
-      { upsert: true }
-    );
+    if (playersData.length > 0) {
+      await Player.findOneAndUpdate(
+        { leagueId: league },
+        { data: playersData },
+        { upsert: true }
+      );
+    } else {
+      console.log(
+        `Players data for league ${league} is empty, skipping database update.`
+      );
+    }
   } catch (error) {
     console.error("Error fetching or storing players data:", error);
   }
@@ -92,6 +104,12 @@ async function getInfo(leagueIds, seasonYear) {
     }
   });
 }
+// const seasonYear = 2023;
+// const firstBatch = [
+//   39, 40, 44, 61, 71, 78, 88, 94, 128, 135, 140, 142, 253, 254, 262, 307, 323,
+// ];
+// getInfo(firstBatch, seasonYear);
+
 module.exports = {
   getInfo,
 };
