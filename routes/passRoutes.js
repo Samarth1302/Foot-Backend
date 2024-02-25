@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const authenticateToken = require("../middleware/auth");
 const {
   forgotPassword,
   changePassword,
@@ -7,6 +8,6 @@ const {
 
 router.post("/forgot", forgotPassword);
 
-router.post("/change", changePassword);
+router.post("/change", authenticateToken, changePassword);
 
 module.exports = router;

@@ -30,7 +30,7 @@ db.once("open", () => {
 });
 
 app.use("/auth", authRoutes);
-app.use("/security", passRoutes);
+app.use("/pass", passRoutes);
 app.use("/info", infoRoutes);
 app.use("/news", newsRoutes);
 app.listen(port, () => {

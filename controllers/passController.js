@@ -51,21 +51,17 @@ const changePassword = async (req, res) => {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
-    const userFromDB = await User.findOne({ email: user.email });
-
+    const userFromDB = await User.findOne({ _id: user.user_id });
     const passwordMatch = await bcrypt.compare(
       currentPassword,
       userFromDB.password
     );
-
     if (!passwordMatch) {
       return res.status(400).json({ error: "Incorrect current password" });
     }
-
     const encryptedNewPassword = await bcrypt.hash(newPassword, 10);
     userFromDB.password = encryptedNewPassword;
     await userFromDB.save();
-
     res.status(200).json({
       success: true,
       message: "Password changed successfully",
