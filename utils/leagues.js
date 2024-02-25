@@ -32,12 +32,9 @@ const fetchDataCleanAndStoreInMongo = async () => {
     const leagueIds = [
       39, 40, 61, 71, 78, 88, 94, 128, 135, 140, 142, 253, 254, 262, 307, 323,
     ];
-    const season = 2023;
 
-    const filteredLeagues = newData.response.filter(
-      (league) =>
-        leagueIds.includes(league.league.id) &&
-        league.seasons.some((season) => season.year === season)
+    const filteredLeagues = newData.response.filter((league) =>
+      leagueIds.includes(league.league.id)
     );
 
     const existingLeague = await League.findOne();
