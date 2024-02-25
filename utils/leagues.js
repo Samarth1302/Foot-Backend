@@ -30,8 +30,7 @@ const fetchDataCleanAndStoreInMongo = async () => {
     const newData = await response.json();
 
     const leagueIds = [
-      39, 40, 44, 61, 71, 78, 88, 94, 128, 135, 140, 142, 253, 254, 262, 307,
-      323,
+      39, 40, 61, 71, 78, 88, 94, 128, 135, 140, 142, 253, 254, 262, 307, 323,
     ];
     const season = 2023;
 
