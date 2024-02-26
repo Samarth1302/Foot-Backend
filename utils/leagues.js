@@ -59,8 +59,6 @@ const fetchDataCleanAndStoreInMongo = async () => {
     mongoose.connection.close();
   }
 };
-
-fetchDataCleanAndStoreInMongo();
 module.exports = {
   fetchDataCleanAndStoreInMongo,
 };
