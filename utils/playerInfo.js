@@ -152,4 +152,4 @@ playerInfo(firstBatch, seasonYear);
 module.exports = {
   playerInfo,
 };
-//  78, 88, 94, 128, 135, 140, 142, 253, 262, 307, 323,
+//  88, 94, 135, 140, 253, 262, 307, 323,
