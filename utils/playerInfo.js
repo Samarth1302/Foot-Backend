@@ -14,7 +14,7 @@ const apiUrl = "https://v3.football.api-sports.io/";
 
 async function getPlayers(league, season, startPage = 1, playersData = []) {
   try {
-    const timeoutDuration = 30000; // 30 seconds timeout
+    const timeoutDuration = 30000;
     const url = `${apiUrl}players?league=${league}&season=${season}&page=${startPage}`;
     const response = await fetch(url, { method: "GET", headers });
     const data = await response.json();
@@ -22,7 +22,6 @@ async function getPlayers(league, season, startPage = 1, playersData = []) {
     if (data.response.length === 0) {
       console.log(`No players received in page ${startPage}, retrying...`);
 
-      // Retry after timeout
       await new Promise((resolve) => setTimeout(resolve, timeoutDuration));
 
       const retryResponse = await fetch(url, { method: "GET", headers });
@@ -122,6 +121,35 @@ async function storePlayersDataInMongoDB(league, season) {
   } catch (error) {
     console.error("Error fetching or storing players data:", error);
   }
+  // try {
+  //   const existingPlayerData = await Player.findOne({ leagueId: league });
+  //   let playersData = [];
+
+  //   if (existingPlayerData && existingPlayerData.data) {
+  //     playersData = existingPlayerData.data;
+  //     console.log(`Found existing players data for league ${league}`);
+  //   }
+
+  //   const newPlayersData = await getPlayers(league, season);
+
+  //   console.log(`Total new players received: ${newPlayersData.length}`);
+
+  //   if (newPlayersData.length > 0) {
+  //     playersData = playersData.concat(newPlayersData);
+  //     await Player.findOneAndUpdate(
+  //       { leagueId: league },
+  //       { data: playersData },
+  //       { upsert: true }
+  //     );
+  //     console.log(`Players data stored in MongoDB for league ${league}`);
+  //   } else {
+  //     console.log(
+  //       `No new players data received for league ${league}, skipping database update.`
+  //     );
+  //   }
+  // } catch (error) {
+  //   console.error("Error fetching or storing players data:", error);
+  // }
 }
 
 async function playerInfo(leagueIds, seasonYear) {
@@ -152,4 +180,4 @@ playerInfo(firstBatch, seasonYear);
 module.exports = {
   playerInfo,
 };
-//  88, 94, 135, 140, 253, 262, 307, 323,
+//  307, 323,

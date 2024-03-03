@@ -249,10 +249,42 @@ router.get("/leagues/:leagueId/teams/:teamId/players", async (req, res) => {
       height: player.player.height,
       weight: player.player.weight,
       photo: player.player.photo,
+      position: player.statistics[0].games.position,
       teamId: teamId,
+      playerId: player.player.id,
     }));
 
     res.json(transformedPlayers);
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/teams/all", async (req, res) => {
+  try {
+    const allTeamsData = await Team.find({}, { _id: 0 });
+
+    if (!allTeamsData || allTeamsData.length === 0) {
+      return res.status(404).json({ error: "No teams found" });
+    }
+
+    const allTeams = [];
+
+    allTeamsData.forEach((teamDoc) => {
+      const leagueId = teamDoc.leagueId;
+
+      teamDoc.data.response.forEach((team) => {
+        allTeams.push({
+          id: team.team.id,
+          name: team.team.name,
+          logo: team.team.logo,
+          leagueId: leagueId,
+        });
+      });
+    });
+
+    res.json(allTeams);
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ error: "Internal Server Error" });
