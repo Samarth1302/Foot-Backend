@@ -173,11 +173,10 @@ async function playerInfo(leagueIds, seasonYear) {
   });
 }
 
-const seasonYear = 2023;
-const firstBatch = [];
-playerInfo(firstBatch, seasonYear);
+// const seasonYear = 2023;
+// const firstBatch = [];
+// playerInfo(firstBatch, seasonYear);
 
 module.exports = {
   playerInfo,
 };
-//  307, 323,

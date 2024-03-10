@@ -41,6 +41,11 @@ const fetchAndStoreFootballNews = async () => {
     const existingNews = await News.findOne().sort({ createdAt: -1 });
 
     if (existingNews) {
+      if (recentArticles.length < 30) {
+        const remainingCount = 30 - recentArticles.length;
+        const additionalArticles = existingNews.data.slice(0, remainingCount);
+        recentArticles = recentArticles.concat(additionalArticles);
+      }
       existingNews.data = recentArticles;
       await existingNews.save();
     } else {

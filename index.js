@@ -8,6 +8,7 @@ const cron = require("node-cron");
 const passRoutes = require("./routes/passRoutes");
 const infoRoutes = require("./routes/infoRoutes");
 const newsRoutes = require("./routes/newsRoutes.js");
+const commRoutes = require("./routes/commRoutes.js");
 const { performOps } = require("./utils/standing.js");
 const { fetchAndStoreFootballNews } = require("./utils/fetchNews.js");
 const app = express();
@@ -33,6 +34,7 @@ app.use("/auth", authRoutes);
 app.use("/pass", passRoutes);
 app.use("/info", infoRoutes);
 app.use("/news", newsRoutes);
+app.use("/comm", commRoutes);
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
