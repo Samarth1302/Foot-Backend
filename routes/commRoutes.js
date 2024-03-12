@@ -7,25 +7,26 @@ const replyController = require("../controllers/replyController");
 
 router.post("/comments", authenticateToken, commentController.createComment);
 router.get(
-  "/comments/page",
+  "/comments/:pageIdentifier",
   authenticateToken,
   commentController.getCommentsByPageIdentifier
 );
 router.put(
-  "/comments/:commentId",
+  "/editComm/:commentId",
   authenticateToken,
   commentController.updateComment
 );
 router.delete(
-  "/comments/:commentId",
+  "/delComm/:commentId",
   authenticateToken,
   commentController.deleteComment
 );
 
-router.post("/replies", authenticateToken, replyController.createReply);
-router.put("/replies/:replyId", authenticateToken, replyController.updateReply);
+router.post("/replies/:commentId", authenticateToken, replyController.createReply);
+router.get("/getReplies/:commentId", authenticateToken, replyController.getReplies);
+router.put("/editReply/:replyId", authenticateToken, replyController.updateReply);
 router.delete(
-  "/replies/:replyId",
+  "/delReply/:replyId",
   authenticateToken,
   replyController.deleteReply
 );

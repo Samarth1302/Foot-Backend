@@ -3,7 +3,8 @@ const Comment = require("../models/Comment");
 const User = require("../models/User");
 
 const createReply = async (req, res) => {
-  const { userId, commentId, text } = req.body;
+  const { userId, text } = req.body;
+  const {commentId} = req.params;
 
   try {
     const user = await User.findById(userId);
@@ -25,6 +26,28 @@ const createReply = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to create reply" });
+  }
+};
+
+const getReplies = async (req, res) => {
+  const {  commentId } = req.params;
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(400).json({ error: "Comment not found" });
+    }
+    const replies = [];
+    for (const replyId of comment.replies) {
+      const reply = await Reply.findById(replyId);
+      if (reply) {
+        replies.push(reply);
+      }
+    }
+    res.json(replies);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to retrieve replies for this comment" });
   }
 };
 
@@ -58,7 +81,7 @@ const deleteReply = async (req, res) => {
       return res.status(404).json({ error: "Reply not found" });
     }
 
-    await reply.remove();
+    await reply.deleteOne();
 
     res.status(200).json({ message: "Reply deleted successfully" });
   } catch (error) {
@@ -67,4 +90,4 @@ const deleteReply = async (req, res) => {
   }
 };
 
-module.exports = { createReply, updateReply, deleteReply };
+module.exports = { createReply, updateReply, getReplies, deleteReply };

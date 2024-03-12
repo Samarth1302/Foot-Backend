@@ -20,7 +20,7 @@ const createComment = async (req, res) => {
   }
 };
 const getCommentsByPageIdentifier = async (req, res) => {
-  const { pageIdentifier } = req.params;
+const { pageIdentifier } = req.params;
 
   try {
     const comments = await Comment.find({ pageIdentifier });
@@ -59,7 +59,7 @@ const deleteComment = async (req, res) => {
       return res.status(404).json({ error: "Comment not found" });
     }
 
-    await comment.remove();
+    await comment.deleteOne();
 
     res.status(200).json({ message: "Comment deleted successfully" });
   } catch (error) {
