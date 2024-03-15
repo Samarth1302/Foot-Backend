@@ -36,7 +36,7 @@ const fetchAndStoreFootballNews = async () => {
       (a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)
     );
 
-    const recentArticles = filteredArticles.slice(0, 30);
+    let recentArticles = filteredArticles.slice(0, 30);
 
     const existingNews = await News.findOne().sort({ createdAt: -1 });
 

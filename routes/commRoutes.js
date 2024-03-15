@@ -7,7 +7,7 @@ const replyController = require("../controllers/replyController");
 
 router.post("/comments", authenticateToken, commentController.createComment);
 router.get(
-  "/comments/:pageIdentifier",
+  "/comments",
   authenticateToken,
   commentController.getCommentsByPageIdentifier
 );
