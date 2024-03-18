@@ -1,10 +1,8 @@
 const fetch = require("node-fetch");
 const Table = require("../models/Table");
-const mongoose = require("mongoose");
 require("dotenv").config();
 
 const apiKey = process.env.API_KEY;
-
 const apiUrl = "https://v3.football.api-sports.io/";
 
 async function callApi(endpoint, params = {}) {
@@ -58,22 +56,19 @@ async function storeStandingsDataInMongoDB(leagueId, season) {
     }
   } catch (error) {
     console.error("Error storing standings data in MongoDB:", error);
+    throw error;
   }
 }
 
 async function performOps(leagueIds, seasonYear) {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-
     for (const leagueId of leagueIds) {
       await storeStandingsDataInMongoDB(leagueId, seasonYear);
     }
+    console.log("Standings updated successfully.");
   } catch (error) {
-    console.error("Error in standings function:", error);
-  } finally {
-    console.log("Standings data stored in MongoDB successfully!");
-    mongoose.connection.close();
-    console.log("Database connection closed.");
+    console.error("Error in performOps function:", error);
+    throw error;
   }
 }
 
