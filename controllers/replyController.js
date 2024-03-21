@@ -62,38 +62,6 @@ const getReplies = async (req, res) => {
   }
 };
 
-const updateReply = async (req, res) => {
-  const { replyId } = req.params;
-  const { text } = req.body;
-  const userId = req.user.user_id;
-
-  try {
-    const reply = await Reply.findById(replyId);
-    if (!reply) {
-      return res.status(404).json({ error: "Reply not found" });
-    }
-    if (userId !== reply.userId.toString()) {
-      return res.status(401).json({ error: "Cannot edit reply" });
-    }
-    reply.text = text;
-    reply.editedAt = Date.now();
-    await reply.save();
-
-    await Comment.findOneAndUpdate(
-      { replies: replyId },
-      {
-        $set: { "replies.$.text": text, "replies.$.editedAt": reply.editedAt },
-      },
-      { new: true }
-    );
-
-    res.status(200).json(reply);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to update reply" });
-  }
-};
-
 const deleteReply = async (req, res) => {
   const { replyId } = req.params;
   const userId = req.user.user_id;

@@ -24,7 +24,6 @@ router.delete(
 
 router.post("/replies/:commentId", authenticateToken, replyController.createReply);
 router.get("/getReplies/:commentId", authenticateToken, replyController.getReplies);
-router.put("/editReply/:replyId", authenticateToken, replyController.updateReply);
 router.delete(
   "/delReply/:replyId",
   authenticateToken,
