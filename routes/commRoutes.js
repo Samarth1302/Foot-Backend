@@ -6,11 +6,7 @@ const commentController = require("../controllers/commentController");
 const replyController = require("../controllers/replyController");
 
 router.post("/comments", authenticateToken, commentController.createComment);
-router.get(
-  "/comments",
-  authenticateToken,
-  commentController.getCommentsByPageIdentifier
-);
+router.get("/comments", commentController.getCommentsByPageIdentifier);
 router.put(
   "/editComm/:commentId",
   authenticateToken,
@@ -22,8 +18,12 @@ router.delete(
   commentController.deleteComment
 );
 
-router.post("/replies/:commentId", authenticateToken, replyController.createReply);
-router.get("/getReplies/:commentId", authenticateToken, replyController.getReplies);
+router.post(
+  "/replies/:commentId",
+  authenticateToken,
+  replyController.createReply
+);
+router.get("/getReplies/:commentId", replyController.getReplies);
 router.delete(
   "/delReply/:replyId",
   authenticateToken,

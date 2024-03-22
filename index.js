@@ -6,6 +6,7 @@ require("dotenv").config();
 const authRoutes = require("./routes/authRoutes");
 const cron = require("node-cron");
 const passRoutes = require("./routes/passRoutes");
+const shopRoutes = require("./routes/shopRoutes.js");
 const infoRoutes = require("./routes/infoRoutes");
 const newsRoutes = require("./routes/newsRoutes.js");
 const commRoutes = require("./routes/commRoutes.js");
@@ -35,6 +36,8 @@ app.use("/pass", passRoutes);
 app.use("/info", infoRoutes);
 app.use("/news", newsRoutes);
 app.use("/comm", commRoutes);
+app.use("/shop", shopRoutes);
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

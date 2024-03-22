@@ -88,4 +88,4 @@ const deleteReply = async (req, res) => {
   }
 };
 
-module.exports = { createReply, updateReply, getReplies, deleteReply };
+module.exports = { createReply, getReplies, deleteReply };
