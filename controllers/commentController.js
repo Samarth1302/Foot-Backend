@@ -16,7 +16,7 @@ const createComment = async (req, res) => {
       userId: userId,
       createdAt: { $gte: today },
     });
-    if (commentCount >= 3) {
+    if (commentCount >= 7) {
       return res
         .status(400)
         .json({ error: "You have reached the daily comment limit" });
@@ -37,7 +37,7 @@ const getCommentsByPageIdentifier = async (req, res) => {
 
   try {
     const comments = await Comment.find({ pageIdentifier }).sort({
-      editedAt: -1,
+      createdAt: -1,
     });
     res.json(comments);
   } catch (error) {

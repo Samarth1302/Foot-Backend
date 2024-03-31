@@ -23,7 +23,7 @@ const createReply = async (req, res) => {
       userId: userId,
       createdAt: { $gte: today },
     });
-    if (replyCount >= 3) {
+    if (replyCount >= 5) {
       return res
         .status(400)
         .json({ error: "You have reached the daily reply limit" });
@@ -50,7 +50,7 @@ const getReplies = async (req, res) => {
       return res.status(400).json({ error: "Comment not found" });
     }
     const replies = await Reply.find({ _id: { $in: comment.replies } }).sort({
-      editedAt: -1,
+      createdAt: -1,
     });
 
     res.json(replies);
