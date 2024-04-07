@@ -13,14 +13,12 @@ const fetch = require("node-fetch");
 require("dotenv").config();
 const Competition = require("../models/Competition");
 
-const API_TOKEN = "cc7e657f22ca4549960f18c1b1f0228d";
-
 async function fetchData(url, headers = {}) {
   try {
     const response = await fetch(url, {
       headers: {
         ...headers,
-        "X-Auth-Token": API_TOKEN,
+        "X-Auth-Token": process.env.DATAORG_TOKEN,
       },
     });
 
