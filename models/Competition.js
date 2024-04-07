@@ -1,12 +1,13 @@
 const mongoose = require("mongoose");
 
 const CompSchema = new mongoose.Schema({
-  data: mongoose.Schema.Types.Mixed,
-  compId: { type: Number, required: true, unique: true },
-  compName: { type: String, required: true },
-  compCode: { type: String, required: true ,  unique: true },
-  compType: String,
-  compSymb:  { type: String, required: true },
+  scorers: mongoose.Schema.Types.Mixed,
+  matches: mongoose.Schema.Types.Mixed,
+  compId: { type: Number, unique: true },
+  compName: { type: String },
+  compNation: { type: String },
+  compCode: { type: String },
+  compSymb: { type: String },
 });
 
 const Competition = mongoose.model("Competition", CompSchema);

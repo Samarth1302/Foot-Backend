@@ -8,55 +8,120 @@
 {{url}}/v4/matches/ (ONLY DAY TO DAY BASIS) --- direct dynamic fetch (1)
 
 */
-const mongoose = require('mongoose');
-const fetch = require('node-fetch');
-const cron = require('node-cron');
-const Competition = require('../models/Competition');
+// const mongoose = require("mongoose");
+const fetch = require("node-fetch");
+require("dotenv").config();
+const Competition = require("../models/Competition");
 
-async function fetchData(url) {
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        return null;
+const API_TOKEN = "cc7e657f22ca4549960f18c1b1f0228d";
+
+async function fetchData(url, headers = {}) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        ...headers,
+        "X-Auth-Token": API_TOKEN,
+      },
+    });
+
+    if (response.status === 429) {
+      return {
+        error: true,
+        message: "Request limit reached. Please wait and try again later.",
+      };
     }
-}
 
-async function fetchMatchesAndScorers(competitionCode) {
-    const matchesUrl = `{{url}}/v4/competitions/${competitionCode}/matches`;
-    const scorersUrl = `{{url}}/v4/competitions/${competitionCode}/scorers`;
-    
-    const matchesData = await fetchData(matchesUrl);
-    const scorersData = await fetchData(scorersUrl);
-    
-    return { matches: matchesData, scorers: scorersData };
+    if (!response.ok) {
+      return {
+        error: true,
+        message: `HTTP error! status: ${response.status}`,
+      };
+    }
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return null;
+  }
 }
 
 async function fetchStandings(competitionCode) {
-    const standingsUrl = `{{url}}/v4/competitions/${competitionCode}/standings`;
-    return await fetchData(standingsUrl);
+  const standingsUrl = `https://api.football-data.org/v4/competitions/${competitionCode}/standings`;
+  return await fetchData(standingsUrl);
 }
 
-async function fetchMatchesForDate(date) {
-    const matchesUrl = `{{url}}/v4/matches/?date=${date}`;
-    return await fetchData(matchesUrl);
+async function fetchMatchesForDate() {
+  const matchesUrl = `https://api.football-data.org/v4/matches/`;
+  try {
+    const data = await fetchData(matchesUrl);
+    return data;
+  } catch (error) {
+    console.error("Error fetching matches for date:", error);
+  }
 }
 
-async function fetchAndStoreCompetitions() {
-    const competitionsData = await fetchData('{{url}}/v4/competitions');
-    await Competition.insertMany(competitionsData);
+async function fetchStandingsForCups() {
+  const cupCodes = ["CL", "EC", "CLI"];
+  try {
+    const standingsData = await Promise.all(cupCodes.map(fetchStandings));
+    return standingsData;
+  } catch (error) {
+    console.error("Error fetching standings for cups:", error);
+  }
 }
-/*
-cron.schedule('0 0 * * *', async () => {
-    const competitions = await Competition.find();
-    competitions.forEach(async (competition) => {
-        const { matches, scorers } = await fetchMatchesAndScorers(competition.compCode);
-        competition.data.matches = matches;
-        competition.data.scorers = scorers;
-        await competition.save();
+
+async function fetchCompData(codes) {
+  for (const code of codes) {
+    const data = await fetchMatchesAndScorers(code);
+    await Competition.findOneAndUpdate({ compCode: code }, data, {
+      upsert: true,
     });
-});*/
+  }
+}
+
+async function fetchMatchesAndScorers(competitionCode) {
+  //   const matchesUrl = `https://api.football-data.org/v4/competitions/${competitionCode}/matches`;
+  const scorersUrl = `https://api.football-data.org/v4/competitions/${competitionCode}/scorers`;
+
+  //   const matchesData = await fetchData(matchesUrl);
+  const scorersData = await fetchData(scorersUrl);
+
+  return { scorers: scorersData };
+}
+
+// async function fetchAndStoreCompetitions() {
+//   try {
+//     const response = await fetchData(
+//       "https://api.football-data.org/v4/competitions"
+//     );
+
+//     if (!response || !Array.isArray(response.competitions)) {
+//       console.error("Error: Competitions data is invalid.");
+//       return;
+//     }
+
+//     for (const competition of response.competitions) {
+//       const mappedCompetition = {
+//         compId: competition.id,
+//         compName: competition.name,
+//         compNation: competition.area.name,
+//         compCode: competition.code,
+//         compSymb: competition.emblem,
+//       };
+
+//       await Competition.create(mappedCompetition, { timeout: 30000 });
+//     }
+
+//     console.log("Competitions data stored successfully.");
+//   } catch (error) {
+//     console.error("Error fetching and storing competitions data:", error);
+//   }
+// }
+
+fetchStandingsForCups();
+module.exports = {
+  fetchCompData,
+  fetchMatchesForDate,
+  fetchStandingsForCups,
+};
