@@ -3,11 +3,15 @@ const router = express.Router();
 const matchController = require("../controllers/matchController");
 
 router.get(
-  "/:competitionCode/matches",
+  "/competitions",
+  matchController.getCompetitions
+);
+router.get(
+  "/:competitionId/matches",
   matchController.getMatchesForCompetition
 );
 router.get(
-  "/:competitionCode/scorers",
+  "/:competitionId/scorers",
   matchController.getScorersForCompetition
 );
 router.get("/standings", matchController.getStandingsForCups);

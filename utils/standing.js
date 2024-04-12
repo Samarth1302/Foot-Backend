@@ -71,7 +71,6 @@ async function performOps(leagueIds, seasonYear) {
     throw error;
   }
 }
-
 module.exports = {
   performOps,
 };

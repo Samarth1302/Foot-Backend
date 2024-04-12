@@ -7,12 +7,22 @@ const NodeCache = require("node-cache");
 const cache = new NodeCache();
 const CACHE_TTL = 600;
 
+async function getCompetitions(req,res){
+  try {
+    const competitions = await Competition.find({}, 'compName compId');
+    res.json(competitions);
+  } catch (error) {
+    console.error("Error fetching competitions:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 async function getScorersForCompetition(req, res) {
-  const { competitionCode } = req.params;
+  const { competitionId } = req.params;
 
   try {
     const competition = await Competition.findOne({
-      compCode: competitionCode,
+      compId: competitionId,
     });
 
     if (!competition) {
@@ -53,19 +63,19 @@ async function getScorersForCompetition(req, res) {
 }
 
 async function getMatchesForCompetition(req, res) {
-  const { competitionCode } = req.params;
+  const { competitionId } = req.params;
   const { startDate, endDate } = req.query;
 
   try {
     const competition = await Competition.findOne({
-      compCode: competitionCode,
+      compId: competitionId,
     });
 
     if (!competition) {
       return res.status(404).json({ message: "Competition not found." });
     }
 
-    const { compId, compName, compNation, compSymb, matches } = competition;
+    const { compName, compNation, compSymb, matches } = competition;
 
     const filteredMatches = matches.matches.filter((match) => {
       const matchDate = new Date(match.utcDate);
@@ -78,11 +88,11 @@ async function getMatchesForCompetition(req, res) {
       return {
         homeTeam: {
           name: match.homeTeam.name,
-          crest: match.homeTeam.crestUrl,
+          crest: match.homeTeam.crest,
         },
         awayTeam: {
           name: match.awayTeam.name,
-          crest: match.awayTeam.crestUrl,
+          crest: match.awayTeam.crest,
         },
         utcDate: match.utcDate,
         score: {
@@ -95,7 +105,6 @@ async function getMatchesForCompetition(req, res) {
 
     const responseData = {
       competition: {
-        compId,
         compName,
         compNation,
         compSymb,
@@ -165,28 +174,15 @@ async function getMatchesForDate(req, res) {
     const matchesData = await fetchMatchesForDate();
     const formattedMatches = matchesData.matches.map((match) => ({
       area: {
-        id: match.area.id,
         name: match.area.name,
-        code: match.area.code,
         flag: match.area.flag,
       },
       competition: {
-        id: match.competition.id,
         name: match.competition.name,
-        code: match.competition.code,
-        type: match.competition.type,
         emblem: match.competition.emblem,
-      },
-      season: {
-        id: match.season.id,
-        startDate: match.season.startDate,
-        endDate: match.season.endDate,
-        currentMatchday: match.season.currentMatchday,
-        winner: match.season.winner,
       },
       id: match.id,
       utcDate: match.utcDate,
-      stage: match.stage,
       homeTeam: {
         name: match.homeTeam.name,
         crest: match.homeTeam.crest,
@@ -210,6 +206,7 @@ async function getMatchesForDate(req, res) {
 }
 
 module.exports = {
+  getCompetitions,
   getScorersForCompetition,
   getMatchesForCompetition,
   getMatchesForDate,

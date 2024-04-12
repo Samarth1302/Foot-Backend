@@ -47,7 +47,7 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
-cron.schedule("0 */4 * * *", async () => {
+cron.schedule("0 */6 * * *", async () => {
   const firstBatch = [39, 40, 61, 71, 78, 88, 94, 128];
   const secondBatch = [135, 140, 253, 254, 262, 307, 323];
   const seasonYear = 2023;
@@ -75,7 +75,6 @@ cron.schedule("20 1 * * *", async () => {
     "PPL",
     "PD",
     "CL",
-    "EC",
     "CLI",
   ];
 

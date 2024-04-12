@@ -1,14 +1,12 @@
-/*matches, scorers, competitions
-
-{{url}}/v4/competitions- stored in db
-[BSA,PL,ELC,FL1,BL1,SA,DED,PPL,PD] (league codes) [CL,EC,CLI] (cup codes)
+/*{{url}}/v4/competitions- stored in db
+[BSA,PL,ELC,FL1,BL1,SA,DED,PPL,PD] (league codes) [CL,CLI] (cup codes)
 {{url}}/v4/competitions/__/matches --- daily fetch (12)
 {{url}}/v4/competitions/__/scorers  --- daily fetch (12)
-{{url}}/v4/competitions/[CL,EC,CLI]/standings --- direct dynamic fetch (3)
-{{url}}/v4/matches/ (ONLY DAY TO DAY BASIS) --- direct dynamic fetch (1)
+{{url}}/v4/competitions/[CL,CLI]/standings --- direct dynamic fetch (3)
+{{url}}/v4/matches/ (ONLY DAY TO DAY BASIS) --- direct dynamic fetch (1) */
 
-*/
 // const mongoose = require("mongoose");
+
 const fetch = require("node-fetch");
 require("dotenv").config();
 const Competition = require("../models/Competition");
@@ -60,7 +58,7 @@ async function fetchMatchesForDate() {
 }
 
 async function fetchStandingsForCups() {
-  const cupCodes = ["CL", "EC", "CLI"];
+  const cupCodes = ["CL", "CLI"];
   try {
     const standingsData = await Promise.all(cupCodes.map(fetchStandings));
     return standingsData;
@@ -81,7 +79,6 @@ async function fetchCompData(codes) {
 async function fetchMatchesAndScorers(competitionCode) {
   //   const matchesUrl = `https://api.football-data.org/v4/competitions/${competitionCode}/matches`;
   const scorersUrl = `https://api.football-data.org/v4/competitions/${competitionCode}/scorers`;
-
   //   const matchesData = await fetchData(matchesUrl);
   const scorersData = await fetchData(scorersUrl);
 
@@ -117,7 +114,6 @@ async function fetchMatchesAndScorers(competitionCode) {
 //   }
 // }
 
-fetchStandingsForCups();
 module.exports = {
   fetchCompData,
   fetchMatchesForDate,
