@@ -47,7 +47,7 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
-cron.schedule("0 */6 * * *", async () => {
+cron.schedule("0 0 * * *", async () => {
   const firstBatch = [39, 40, 61, 71, 78, 88, 94, 128];
   const secondBatch = [135, 140, 253, 254, 262, 307, 323];
   const seasonYear = 2023;
@@ -59,11 +59,11 @@ cron.schedule("0 */6 * * *", async () => {
   }, 1 * 60 * 1000);
 });
 
-cron.schedule("10 */4 * * *", async () => {
+cron.schedule("10 0 * * *", async () => {
   await fetchAndStoreFootballNews();
 });
 
-cron.schedule("20 1 * * *", async () => {
+cron.schedule("0 1 * * *", async () => {
   const competitionCodes = [
     "BSA",
     "PL",
