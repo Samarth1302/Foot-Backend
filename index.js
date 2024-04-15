@@ -35,6 +35,9 @@ db.once("open", () => {
   console.log("Connected to MongoDB");
 });
 
+app.use("/help", (req, res) => {
+  res.send("Hello, world!");
+});
 app.use("/auth", authRoutes);
 app.use("/pass", passRoutes);
 app.use("/info", infoRoutes);
@@ -47,43 +50,64 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
-cron.schedule("0 0 * * *", async () => {
-  const firstBatch = [39, 40, 61, 71, 78, 88, 94, 128];
-  const secondBatch = [135, 140, 253, 254, 262, 307, 323];
-  const seasonYear = 2023;
+cron.schedule(
+  "0 0 * * *",
+  async () => {
+    const firstBatch = [39, 40, 61, 71, 78, 88, 94, 128];
+    const secondBatch = [135, 140, 253, 254, 262, 307, 323];
+    const seasonYear = 2023;
 
-  await performOps(firstBatch, seasonYear);
+    await performOps(firstBatch, seasonYear);
 
-  setTimeout(async () => {
-    await performOps(secondBatch, seasonYear);
-  }, 1 * 60 * 1000);
-});
+    setTimeout(async () => {
+      await performOps(secondBatch, seasonYear);
+    }, 1 * 60 * 1000);
+  },
+  {
+    timezone: "Asia/Kolkata",
+  }
+);
 
-cron.schedule("10 0 * * *", async () => {
+// cron.schedule(
+//   "10 0 * * *",
+//   async () => {
+//     await fetchAndStoreFootballNews();
+//   },
+//   {
+//     timezone: "Asia/Kolkata",
+//   }
+// );
+cron.schedule("40 2 * * *", async () => {
   await fetchAndStoreFootballNews();
+  console.log("singapore time");
 });
+cron.schedule(
+  "0 1 * * *",
+  async () => {
+    const competitionCodes = [
+      "BSA",
+      "PL",
+      "ELC",
+      "FL1",
+      "BL1",
+      "SA",
+      "DED",
+      "PPL",
+      "PD",
+      "CL",
+      "CLI",
+    ];
 
-cron.schedule("0 1 * * *", async () => {
-  const competitionCodes = [
-    "BSA",
-    "PL",
-    "ELC",
-    "FL1",
-    "BL1",
-    "SA",
-    "DED",
-    "PPL",
-    "PD",
-    "CL",
-    "CLI",
-  ];
+    const batch1 = competitionCodes.slice(0, 6);
+    const batch2 = competitionCodes.slice(6);
 
-  const batch1 = competitionCodes.slice(0, 6);
-  const batch2 = competitionCodes.slice(6);
+    await fetchCompData(batch1);
+    await new Promise((resolve) => setTimeout(resolve, 60000));
+    await fetchCompData(batch2);
 
-  await fetchCompData(batch1);
-  await new Promise((resolve) => setTimeout(resolve, 60000));
-  await fetchCompData(batch2);
-
-  console.log("Match & Scorer job completed.");
-});
+    console.log("Match & Scorer job completed.");
+  },
+  {
+    timezone: "Asia/Kolkata",
+  }
+);
