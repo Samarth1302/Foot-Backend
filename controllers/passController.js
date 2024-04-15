@@ -14,7 +14,7 @@ const forgotPassword = async (req, res) => {
     }
     if (!user.isVerified) {
       return res.status(400).json({
-        error: "Email not verified. Please verify your email first.",
+        error: "Email not verified. Check spam and inbox for FootZone mails.",
       });
     }
 

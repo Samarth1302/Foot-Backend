@@ -2,7 +2,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { sendEmail } = require("../utils/nodemailer");
-const { scheduleCleanupJob } = require("../utils/cleanupUtil");
 const crypto = require("crypto");
 
 async function signup(req, res) {
@@ -182,9 +181,6 @@ async function login(req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
-//CRON-JOBS
-scheduleCleanupJob();
 
 module.exports = {
   signup,
