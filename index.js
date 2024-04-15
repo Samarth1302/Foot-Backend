@@ -50,15 +50,6 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 cron.schedule(
-  "30 15 * * *",
-  async () => {
-    console.log("cron job ran");
-  },
-  {
-    timezone: "Asia/Kolkata",
-  }
-);
-cron.schedule(
   "0 8 * * *",
   async () => {
     const firstBatch = [39, 40, 61, 71, 78, 88, 94, 128];
