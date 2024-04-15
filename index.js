@@ -49,9 +49,17 @@ app.use("/shop", shopRoutes);
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-
 cron.schedule(
-  "0 0 * * *",
+  "46 14 * * *",
+  async () => {
+    console.log("cron job ran");
+  },
+  {
+    timezone: "Asia/Kolkata",
+  }
+);
+cron.schedule(
+  "0 8 * * *",
   async () => {
     const firstBatch = [39, 40, 61, 71, 78, 88, 94, 128];
     const secondBatch = [135, 140, 253, 254, 262, 307, 323];
@@ -67,22 +75,17 @@ cron.schedule(
     timezone: "Asia/Kolkata",
   }
 );
-
-// cron.schedule(
-//   "10 0 * * *",
-//   async () => {
-//     await fetchAndStoreFootballNews();
-//   },
-//   {
-//     timezone: "Asia/Kolkata",
-//   }
-// );
-cron.schedule("40 2 * * *", async () => {
-  await fetchAndStoreFootballNews();
-  console.log("singapore time");
-});
 cron.schedule(
-  "0 1 * * *",
+  "0 8 * * *",
+  async () => {
+    await fetchAndStoreFootballNews();
+  },
+  {
+    timezone: "Asia/Kolkata",
+  }
+);
+cron.schedule(
+  "0 8 * * *",
   async () => {
     const competitionCodes = [
       "BSA",
