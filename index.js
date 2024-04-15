@@ -50,7 +50,7 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 cron.schedule(
-  "46 14 * * *",
+  "30 15 * * *",
   async () => {
     console.log("cron job ran");
   },
