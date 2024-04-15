@@ -1,6 +1,8 @@
 const Comment = require("../models/Comment");
 const Reply = require("../models/Reply");
 const User = require("../models/User");
+var Filter = require("bad-words");
+var filter = new Filter({ replaceRegex: /[A-Za-z0-9가-힣_]/g });
 
 const createComment = async (req, res) => {
   const { pageIdentifier, text } = req.body;
@@ -21,9 +23,14 @@ const createComment = async (req, res) => {
         .status(400)
         .json({ error: "You have reached the daily comment limit" });
     }
-
+    const cleanText = filter.clean(text);
     const username = user.username;
-    const comment = new Comment({ userId, username, pageIdentifier, text });
+    const comment = new Comment({
+      userId,
+      username,
+      pageIdentifier,
+      text: cleanText,
+    });
     await comment.save();
 
     res.status(201).json(comment);
@@ -56,7 +63,8 @@ const updateComment = async (req, res) => {
     if (userId !== comment.userId.toString()) {
       return res.status(401).json({ error: "Cannot edit comment" });
     }
-    comment.text = text;
+    const cleanText = filter.clean(text);
+    comment.text = cleanText;
     comment.editedAt = Date.now();
     await comment.save();
 

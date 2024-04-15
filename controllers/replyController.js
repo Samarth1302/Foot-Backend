@@ -1,6 +1,8 @@
 const Reply = require("../models/Reply");
 const Comment = require("../models/Comment");
 const User = require("../models/User");
+var Filter = require("bad-words");
+var filter = new Filter({ replaceRegex: /[A-Za-z0-9가-힣_]/g });
 
 const createReply = async (req, res) => {
   const { text } = req.body;
@@ -28,7 +30,8 @@ const createReply = async (req, res) => {
         .status(400)
         .json({ error: "You have reached the daily reply limit" });
     }
-    const reply = new Reply({ userId, username, text });
+    const cleanText = filter.clean(text);
+    const reply = new Reply({ userId, username, text: cleanText });
     await reply.save();
 
     comment.replies.push(reply);
