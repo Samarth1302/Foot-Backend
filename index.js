@@ -67,7 +67,15 @@ cron.schedule(
     timezone: "Asia/Kolkata",
   }
 );
-
+cron.schedule(
+  "50 12 * * *",
+  async () => {
+    console.log("Cron ran just now!!!>>>>>>.??//////");
+  },
+  {
+    timezone: "Asia/Kolkata",
+  }
+);
 // cron.schedule(
 //   "10 0 * * *",
 //   async () => {
