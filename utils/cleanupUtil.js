@@ -17,8 +17,4 @@ async function cleanupUnverifiedUsers() {
   }
 }
 
-function scheduleCleanupJob() {
-  cron.schedule("0 0 * * *", cleanupUnverifiedUsers);
-}
-
-module.exports = { scheduleCleanupJob };
+module.exports = { cleanupUnverifiedUsers };

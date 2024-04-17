@@ -8,6 +8,7 @@ const cron = require("node-cron");
 const { fetchCompData } = require("./utils/fixture.js");
 const { performOps } = require("./utils/standing.js");
 const { fetchAndStoreFootballNews } = require("./utils/fetchNews.js");
+const { cleanupUnverifiedUsers } = require("./utils/cleanupUtil.js");
 const authRoutes = require("./routes/authRoutes");
 const passRoutes = require("./routes/passRoutes");
 const shopRoutes = require("./routes/shopRoutes.js");
@@ -76,7 +77,7 @@ cron.schedule(
   }
 );
 cron.schedule(
-  "0 8 * * *",
+  "2 8 * * *",
   async () => {
     const competitionCodes = [
       "BSA",
@@ -99,7 +100,16 @@ cron.schedule(
     await new Promise((resolve) => setTimeout(resolve, 60000));
     await fetchCompData(batch2);
 
-    console.log("Match & Scorer job completed.");
+    console.log("Scorer job completed.");
+  },
+  {
+    timezone: "Asia/Kolkata",
+  }
+);
+cron.schedule(
+  "4 8 * * *",
+  async () => {
+    await cleanupUnverifiedUsers();
   },
   {
     timezone: "Asia/Kolkata",
