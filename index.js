@@ -107,7 +107,7 @@ cron.schedule(
   }
 );
 cron.schedule(
-  "4 8 * * *",
+  "4 8 15 * *",
   async () => {
     await cleanupUnverifiedUsers();
   },

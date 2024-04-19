@@ -4,7 +4,7 @@ const User = require("../models/User");
 async function cleanupUnverifiedUsers() {
   try {
     const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 31);
 
     await User.deleteMany({
       isVerified: false,
