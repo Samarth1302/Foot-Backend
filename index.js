@@ -51,7 +51,7 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 cron.schedule(
-  "0 8 * * *",
+  "1 8 * * *",
   async () => {
     const firstBatch = [39, 40, 61, 71, 78, 88, 94, 128];
     const secondBatch = [135, 140, 253, 254, 262, 307, 323];
@@ -77,7 +77,7 @@ cron.schedule(
   }
 );
 cron.schedule(
-  "2 8 * * *",
+  "4 8 * * *",
   async () => {
     const competitionCodes = [
       "BSA",
@@ -107,7 +107,7 @@ cron.schedule(
   }
 );
 cron.schedule(
-  "4 8 15 * *",
+  "6 8 15 * *",
   async () => {
     await cleanupUnverifiedUsers();
   },
