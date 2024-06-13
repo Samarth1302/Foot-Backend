@@ -55,7 +55,7 @@ cron.schedule(
   async () => {
     const firstBatch = [39, 40, 61, 71, 78, 88, 94, 128];
     const secondBatch = [135, 140, 253, 254, 262, 307, 323];
-    const seasonYear = 2023;
+    const seasonYear = 2024;
 
     await performOps(firstBatch, seasonYear);
 
