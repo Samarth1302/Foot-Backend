@@ -173,7 +173,7 @@ async function playerInfo(leagueIds, seasonYear) {
   });
 }
 
-// const seasonYear = 2023;
+// const seasonYear = 2024;
 // const firstBatch = [];
 // playerInfo(firstBatch, seasonYear);
 
