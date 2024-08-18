@@ -67,7 +67,7 @@ async function teamInfo(leagueIds, seasonYear) {
     }
   });
 }
-// const seasonYear = 2024;
+// const seasonYear = 2025;
 // const firstBatch = [];
 // teamInfo(firstBatch, seasonYear);
 
